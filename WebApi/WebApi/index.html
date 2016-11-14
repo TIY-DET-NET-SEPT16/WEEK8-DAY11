@@ -1,0 +1,64 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Products</title>
+    <meta charset="utf-8" />
+</head>
+<body>
+    <h2>All Products</h2>
+    <ul id="products"></ul>
+
+
+    <h2>Product by Id</h2>
+    <input type="text" id="prodId" size="5" />
+    <input type="button" value="Hey Guys!" onclick="find();" />
+    <p id="product">Goes here</p>
+
+    <h2>Product by Category</h2>
+    <input type="text" id="prodCat" size="5" />
+    <input type="button" value="By Category" onclick="findByCategory();" />
+    <p id="productCat">Category Stuff Goes Here</p>
+
+    <script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+
+    <script>
+        var uri = 'api/products';
+
+        $(document).ready(function () {
+            $.getJSON(uri)
+                .done(function (data) {
+                    $.each(data, function (key, item) {
+                        $('<li>', { text: formatItem(item) }).appendTo($('#products'));
+                    });
+                });
+        });
+
+        function formatItem(item) {
+            return item.Name + ': $' + item.Price;
+        }
+
+        function findByCategory() {
+            var prodCatString = $('#prodCat').val();
+            $.getJSON(uri + "?cat=" + prodCatString)
+                .done(function (data) {
+                    $("#productCat").text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus, err) {
+                    $("#productCat").text('Error: ' + err);
+                });
+        }
+
+        function find() {
+            var id = $('#prodId').val();
+            $.getJSON(uri + "/" + id)
+                .done(function (data) {
+                    $("#product").text(formatItem(data));
+                })
+                .fail(function (jqXHR, textStatus, err) {
+                    $("#product").text('Error: ' + err);
+                });
+        }
+    </script>
+
+</body>
+</html>
